@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Eye Tracking Analytics Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="analytics.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Heatmap.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.5/heatmap.min.js"></script>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+    <h1><i class="fas fa-chart-bar"></i> Eye Tracking Analytics Dashboard</h1>
+    <div class="header-buttons">
+        <button id="backButton" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Checkout</button>
+        <button id="resetButton" class="btn-reset"><i class="fas fa-redo"></i> Reset Data</button>
+        <button id="exportButton" class="btn-export"><i class="fas fa-download"></i> Export Report</button>
+    </div>
+</div>
+
+<!-- Main Container -->
+<div class="analytics-container">
+
+    <!-- Key Metrics Section -->
+    <section class="metrics-section">
+        <h2>Key Performance Metrics</h2>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon"><i class="fas fa-clock"></i></div>
+                <div class="metric-content">
+                    <p class="metric-label">Avg. Time to Complete</p>
+                    <p class="metric-value" id="avgTime">--</p>
+                    <p class="metric-unit">seconds</p>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="metric-content">
+                    <p class="metric-label">Confusion Events</p>
+                    <p class="metric-value" id="confusionCount">0</p>
+                    <p class="metric-unit">triggered</p>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon"><i class="fas fa-percentage"></i></div>
+                <div class="metric-content">
+                    <p class="metric-label">Conversion Rate</p>
+                    <p class="metric-value" id="conversionRate">0%</p>
+                    <p class="metric-unit">success</p>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon"><i class="fas fa-users"></i></div>
+                <div class="metric-content">
+                    <p class="metric-label">Total Sessions</p>
+                    <p class="metric-value" id="sessionCount">0</p>
+                    <p class="metric-unit">tracked</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Heatmap Section -->
+    <section class="heatmap-section">
+        <h2>Gaze Heatmap - Checkout Interface</h2>
+        <div class="heatmap-container">
+            <div id="heatmapContainer" class="heatmap">
+                <img src="https://via.placeholder.com/900x500?text=Heatmap+Visualization" alt="Heatmap" class="heatmap-bg">
+                <canvas id="heatmapCanvas" width="900" height="500"></canvas>
+            </div>
+            <div class="heatmap-legend">
+                <p><strong>Color Intensity:</strong> Darker = More Gaze Time</p>
+                <div class="legend-colors">
+                    <span style="background: #0000ff;">Cold</span>
+                    <span style="background: #00ff00;">Warm</span>
+                    <span style="background: #ffff00;">Hot</span>
+                    <span style="background: #ff0000;">Very Hot</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Help Impact Section -->
+    <section class="help-impact-section">
+        <h2>Impact of Auto-Help Feature</h2>
+        <div class="comparison-grid">
+            <div class="comparison-card">
+                <h3>Before Help Shown</h3>
+                <div class="stat">
+                    <span class="stat-label">Avg. Time Spent:</span>
+                    <span class="stat-value" id="beforeHelpTime">--</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Confusion Spikes:</span>
+                    <span class="stat-value" id="beforeHelpConfusion">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Users Helped:</span>
+                    <span class="stat-value" id="beforeHelpUsers">0</span>
+                </div>
+            </div>
+
+            <div class="comparison-card highlight">
+                <h3>After Help Shown</h3>
+                <div class="stat">
+                    <span class="stat-label">Avg. Time Spent:</span>
+                    <span class="stat-value" id="afterHelpTime">--</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Confusion Spikes:</span>
+                    <span class="stat-value" id="afterHelpConfusion">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Users Helped:</span>
+                    <span class="stat-value" id="afterHelpUsers">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="improvement-indicator">
+            <p id="improvementText">Help has improved user experience</p>
+            <div class="progress-bar">
+                <div id="improvementBar" class="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Engagement -->
+    <section class="engagement-section">
+        <h2>Dwell Time by Section</h2>
+        <div class="chart-container">
+            <div class="section-bars">
+                <div class="bar-row">
+                    <span class="bar-label">Items</span>
+                    <div class="bar-container">
+                        <div id="itemsBar" class="bar"></div>
+                    </div>
+                    <span class="bar-value" id="itemsValue">0s</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Summary</span>
+                    <div class="bar-container">
+                        <div id="summaryBar" class="bar"></div>
+                    </div>
+                    <span class="bar-value" id="summaryValue">0s</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Payment</span>
+                    <div class="bar-container">
+                        <div id="paymentBar" class="bar"></div>
+                    </div>
+                    <span class="bar-value" id="paymentValue">0s</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Checkout</span>
+                    <div class="bar-container">
+                        <div id="checkoutBar" class="bar"></div>
+                    </div>
+                    <span class="bar-value" id="checkoutValue">0s</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Revisit Analysis -->
+    <section class="revisit-section">
+        <h2>Section Revisit Analysis</h2>
+        <div class="revisit-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Section</th>
+                        <th>Total Visits</th>
+                        <th>Avg Dwell Time</th>
+                        <th>Confusion Events</th>
+                        <th>Help Triggered</th>
+                    </tr>
+                </thead>
+                <tbody id="revisitTableBody">
+                    <tr>
+                        <td>Items</td>
+                        <td id="itemsVisits">0</td>
+                        <td id="itemsAvg">--</td>
+                        <td id="itemsConfusion">0</td>
+                        <td id="itemsHelp">No</td>
+                    </tr>
+                    <tr>
+                        <td>Summary</td>
+                        <td id="summaryVisits">0</td>
+                        <td id="summaryAvg">--</td>
+                        <td id="summaryConfusion">0</td>
+                        <td id="summaryHelp">No</td>
+                    </tr>
+                    <tr>
+                        <td>Payment Methods</td>
+                        <td id="paymentVisits">0</td>
+                        <td id="paymentAvg">--</td>
+                        <td id="paymentConfusion">0</td>
+                        <td id="paymentHelp">No</td>
+                    </tr>
+                    <tr>
+                        <td>Checkout Details</td>
+                        <td id="checkoutVisits">0</td>
+                        <td id="checkoutAvg">--</td>
+                        <td id="checkoutConfusion">0</td>
+                        <td id="checkoutHelp">No</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Event Log -->
+    <section class="event-log-section">
+        <h2>Event Timeline</h2>
+        <div class="event-log" id="eventLog">
+            <div class="event-item">
+                <span class="event-time">--:--</span>
+                <span class="event-icon"><i class="fas fa-info-circle"></i></span>
+                <span class="event-text">Waiting for session data...</span>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- Scripts -->
+<script src="analytics.js"></script>
+
+</body>
+</html>
