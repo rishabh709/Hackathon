@@ -1,7 +1,7 @@
 /**********************************************************
  * CONFIG
  **********************************************************/
-const CALIBRATION_FILE = "data.json";
+const CALIBRATION_FILE = "cd.json";
 const DWELL_TIME = 3000;
 
 const CONFUSION_WINDOW = 3000;
@@ -689,3 +689,4 @@ function setupActivityListeners() {
             toggleCharges();
         });
     }
+
