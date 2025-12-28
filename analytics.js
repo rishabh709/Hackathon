@@ -78,8 +78,57 @@ class AnalyticsManager {
         });
 
         // Load sample data if no real data exists
-        if (this.sessionData.sessions.length === 0) {
+        // Process any raw events persisted by the checkout page
+        const hadEvents = this.processStoredEvents();
+
+        // If still no sessions and no events, load sample data
+        if (this.sessionData.sessions.length === 0 && !hadEvents) {
             this.loadSampleData();
+        }
+    }
+
+    processStoredEvents() {
+        try {
+            const raw = localStorage.getItem('eyeTrackingEvents');
+            if (!raw) return false;
+
+            const arr = JSON.parse(raw);
+            if (!Array.isArray(arr) || arr.length === 0) return false;
+
+            arr.forEach(ev => {
+                if (!ev || !ev.type) return;
+                const d = ev;
+                switch (d.type) {
+                    case 'gazePoint':
+                        this.recordGazePoint(d);
+                        break;
+                    case 'dwellTime':
+                    case 'dwell':
+                        this.recordDwellTime(d);
+                        break;
+                    case 'confusionEvent':
+                        this.recordConfusionEvent(d);
+                        break;
+                    case 'helpTriggered':
+                        this.recordHelpTriggered(d);
+                        break;
+                    case 'sessionComplete':
+                        this.recordSessionComplete({ completionTime: d.completionTime || 0, conversationCompleted: d.conversationCompleted });
+                        break;
+                    default:
+                        // ignore unknown
+                        break;
+                }
+            });
+
+            // Optionally clear stored events after processing to avoid duplicates
+            try { localStorage.removeItem('eyeTrackingEvents'); } catch (e) { }
+            this.addEvent('Stored Events Loaded', 'System', 'info');
+            this.saveSessionData();
+            return true;
+        } catch (e) {
+            console.warn('[ANALYTICS] Failed to process stored events', e);
+            return false;
         }
     }
 

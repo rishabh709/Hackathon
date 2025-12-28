@@ -24,6 +24,7 @@ let lastSection = null;
 let enterTime = 0;
 let isTrackingActive = false;
 let consentGiven = false;
+let sessionStart = null;
 
 // section -> timestamps[]
 const sectionHistory = new Map();
@@ -139,6 +140,7 @@ async function startTrackingInit() {
     document.getElementById("startTracking").style.background = "#1ed637ff";
     document.getElementById("startTracking").innerText = "Tracking On";
     document.getElementById("trackingIndicator").classList.add("active");
+    sessionStart = Date.now();
     await initEyeTracking();
 }
 
@@ -239,6 +241,8 @@ function applyCalibrationData(calibration) {
 function onGaze(data) {
     if (!data || !isTrackingActive) return;
     moveDot(data.x, data.y);
+    // Record raw gaze point for analytics
+    try { sendAnalyticsEvent('gazePoint', { x: data.x, y: data.y }); } catch (e) { }
     detectSection(data.x, data.y);
     // Reset inactivity timer on eye movement (shows progress)
     resetInactivityTimer();
@@ -655,14 +659,38 @@ function addAnalyticsLink() {
 }
 
 function sendAnalyticsEvent(type, data) {
+    const payload = { type, ...data, ts: Date.now() };
+
+    // Persist raw event to localStorage for analytics page to consume
     try {
-        // Send to analytics page if it's open
-        window.opener?.postMessage({ type, ...data }, window.location.origin);
-        window.parent?.postMessage({ type, ...data }, window.location.origin);
+        const key = 'eyeTrackingEvents';
+        const raw = localStorage.getItem(key);
+        const arr = raw ? JSON.parse(raw) : [];
+        arr.push(payload);
+        // Keep size bounded to avoid unbounded growth
+        if (arr.length > 5000) arr.splice(0, arr.length - 5000);
+        localStorage.setItem(key, JSON.stringify(arr));
+    } catch (e) {
+        console.warn('[ANALYTICS] Failed to persist event', e);
+    }
+
+    try {
+        // Send to analytics page if it's open (postMessage)
+        window.opener?.postMessage(payload, window.location.origin);
+        window.parent?.postMessage(payload, window.location.origin);
     } catch (e) {
         // Silently fail if no analytics window
     }
 }
+
+// On unload, finalize session record
+window.addEventListener('beforeunload', () => {
+    try {
+        if (sessionStart) {
+            sendAnalyticsEvent('sessionComplete', { completionTime: Date.now() - sessionStart, conversationCompleted: false });
+        }
+    } catch (e) { }
+});
 
 /**********************************************************
  * ACTIVITY LISTENERS
