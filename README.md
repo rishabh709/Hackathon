@@ -15,7 +15,7 @@ A real-time **eye-tracking system** that detects user confusion during online pa
 - [Configuration](#configuration)
 - [Analytics Dashboard](#analytics-dashboard)
 - [How It Works](#how-it-works)
-- [Screenshots](#ScreenShots)
+- [Contributing](#contributing)
 
 ---
 
@@ -404,9 +404,7 @@ For issues, questions, or feature requests:
 
 ---
 
-**Made with ❤️ for better checkout experiences**
-
-ScreenShots : 
+# 💾 ScreenShots : 
 
 <img width="1919" height="916" alt="Screenshot 2025-12-28 104248" src="https://github.com/user-attachments/assets/e3ceed1c-26b5-4f70-8c0b-704b877ef1da" />
 
@@ -421,7 +419,7 @@ ScreenShots :
 
 <img width="1913" height="916" alt="Screenshot 2025-12-28 105200" src="https://github.com/user-attachments/assets/0a9654f2-2036-4dc5-bfe6-11b9d789a4a7" />
 
-
+**Made with ❤️ for better checkout experiences**
 
 
 
