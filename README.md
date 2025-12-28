@@ -15,7 +15,7 @@ A real-time **eye-tracking system** that detects user confusion during online pa
 - [Configuration](#configuration)
 - [Analytics Dashboard](#analytics-dashboard)
 - [How It Works](#how-it-works)
-- [Contributing](#contributing)
+- [Screenshots](#ScreenShots)
 
 ---
 
